@@ -9,6 +9,7 @@ export function toHaveColumn(
   opts: {
     type?: SqliteColumnType.Type;
     notNull?: boolean;
+    foreignKey?: boolean | { table: string; column: string };
   } = {},
 ): MatcherResult {
   const tableRef = TableRef.parse(received);
@@ -23,6 +24,17 @@ export function toHaveColumn(
 
     if (opts.notNull !== undefined) {
       pass = targetColumn.notNull === opts.notNull;
+    }
+
+    if (opts.foreignKey !== undefined) {
+      if (typeof opts.foreignKey === "boolean") {
+        pass = !!targetColumn.foreignKey === opts.foreignKey;
+      } else {
+        pass =
+          typeof targetColumn.foreignKey === "object" &&
+          targetColumn.foreignKey.table === opts.foreignKey.table &&
+          targetColumn.foreignKey.column === opts.foreignKey.column;
+      }
     }
   }
 

@@ -17,6 +17,7 @@ export interface TableRefMatchers<R, T> {
         opts?: {
           type?: SqliteColumnType.Type;
           notNull?: boolean;
+          foreignKey?: boolean | { table: string; column: string };
         },
       ) => R
     : never;

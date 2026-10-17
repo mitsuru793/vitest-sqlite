@@ -1,8 +1,7 @@
 import type { Database } from "better-sqlite3";
 
-import type { DbAdapter } from "~sqlite";
-
-import { quote } from "../../../sqlite/quote.ts";
+import { type DbAdapter, quote } from "~sqlite";
+import { getTableForeignKey } from "../../queries/index.ts";
 
 export const bindGetColumns =
   (db: Database): DbAdapter.Type["getColumns"] =>
@@ -13,10 +12,21 @@ export const bindGetColumns =
       notnull: number;
       pk: number;
     }>;
-    return rows.map((r) => ({
-      name: r.name,
-      type: r.type,
-      notNull: r.notnull === 1,
-      primaryKey: r.pk > 0,
-    }));
+    const fkInfoList = getTableForeignKey(db)(table);
+
+    return rows.map((r) => {
+      const foreignKey = fkInfoList.find((fk) => fk.from === r.name);
+      return {
+        name: r.name,
+        type: r.type,
+        notNull: r.notnull === 1,
+        primaryKey: r.pk > 0,
+        foreignKey: foreignKey
+          ? {
+              table: foreignKey.table,
+              column: foreignKey.to,
+            }
+          : false,
+      };
+    });
   };

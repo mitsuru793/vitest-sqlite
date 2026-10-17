@@ -5,10 +5,17 @@ export type ColumnInfo = typeof schema.inferOut;
 export type Type = ColumnInfo;
 
 export const schema = type({
-  name: "string",
+  name: "string > 0",
+
+  // empty string means no type specified
   type: "string",
+
   notNull: "boolean",
   primaryKey: "boolean",
+  foreignKey: type({
+    table: "string > 0",
+    column: "string > 0",
+  }).or("boolean"),
 });
 
 export const parse = bindParse({ schema, name: "ColumnInfo" });

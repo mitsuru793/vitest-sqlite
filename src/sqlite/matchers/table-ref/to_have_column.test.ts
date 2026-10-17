@@ -102,4 +102,54 @@ describe("toHaveColumn", () => {
       );
     });
   });
+
+  describe("with options.foreignKey", () => {
+    dbTest.beforeEach(({ dbClient }) => {
+      dbClient.exec(`
+        DROP TABLE IF EXISTS users;
+        CREATE TABLE users (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL
+        );
+        
+        DROP TABLE IF EXISTS categories;
+        CREATE TABLE categories (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL
+        );
+
+        DROP TABLE IF EXISTS posts;
+        CREATE TABLE posts (
+          id INTEGER PRIMARY KEY,
+          author_id INTEGER,
+          category_id INTEGER,
+          title TEXT NOT NULL,
+          FOREIGN KEY (author_id) REFERENCES users(id),
+          FOREIGN KEY (category_id) REFERENCES categories(id)
+        );`);
+    });
+
+    dbTest("when passed object", ({ db }) => {
+      expect(table(db, "posts")).toHaveColumn("author_id", {
+        foreignKey: { table: "users", column: "id" },
+      });
+      expect(table(db, "posts")).toHaveColumn("category_id", {
+        foreignKey: { table: "categories", column: "id" },
+      });
+    });
+
+    dbTest("when passed boolean", ({ db }) => {
+      expect(table(db, "posts")).toHaveColumn("author_id", {
+        foreignKey: true,
+      });
+      expect(table(db, "posts")).toHaveColumn("category_id", {
+        foreignKey: true,
+      });
+
+      expect(table(db, "posts")).toHaveColumn("title");
+      expect(table(db, "posts")).toHaveColumn("title", {
+        foreignKey: false,
+      });
+    });
+  });
 });
