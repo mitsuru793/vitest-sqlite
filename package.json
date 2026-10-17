@@ -1,0 +1,58 @@
+{
+  "name": "@mitsuru793/vitest-sqlite",
+  "version": "0.0.0",
+  "description": "Vitest matchers and adapters for testing SQLite databases, with better-sqlite3 support.",
+  "homepage": "https://github.com/mitsuru793/vitest-sqlite#readme",
+  "bugs": {
+    "url": "https://github.com/mitsuru793/vitest-sqlite/issues"
+  },
+  "license": "MIT",
+  "author": "mitsuru793 <mitsuru793@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mitsuru793/vitest-sqlite.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./better-sqlite3": "./dist/better-sqlite3.mjs",
+    "./vite-plus": "./dist/vite-plus.mjs",
+    "./vitest": "./dist/vitest.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch",
+    "test": "vp test",
+    "check": "vp check",
+    "prepublishOnly": "vp run build"
+  },
+  "dependencies": {
+    "@praha/error-factory": "^1.4.1",
+    "arktype": "^2.2.8",
+    "better-sqlite3": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^26.6.5",
+    "bumpp": "^12.3.0",
+    "typescript": "^7.0.2",
+    "vite-plus": "catalog:",
+    "vitest": "^5.0.0"
+  },
+  "peerDependencies": {
+    "vitest": "^5.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.14.0",
+      "onFail": "download"
+    }
+  }
+}

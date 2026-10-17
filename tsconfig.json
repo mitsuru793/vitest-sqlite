@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["es2023"],
+    "moduleDetection": "force",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "types": ["node", "vitest/globals"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "paths": {
+      "~arktype-helper": ["./src/arktype-helper/index.ts"],
+      "~sqlite": ["./src/sqlite/index.ts"],
+      "~sqlite-better-sqlite-3": ["./src/sqlite-better-sqlite-3/index.ts"],
+      "~test/*": ["./test/*"]
+    }
+  }
+}
