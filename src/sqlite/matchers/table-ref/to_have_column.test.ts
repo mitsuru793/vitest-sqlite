@@ -75,4 +75,31 @@ describe("toHaveColumn", () => {
       }
     }
   });
+
+  describe("NULL column type", () => {
+    dbTest.beforeEach(({ dbClient }) => {
+      dbClient.exec(`CREATE TABLE my_table (
+        not_null_col TEXT NOT NULL,
+        nullable_col TEXT
+      )`);
+    });
+
+    dbTest("checks for NULL column type", ({ db }) => {
+      const myTable = table(db, "my_table");
+
+      expect(myTable).toHaveColumn("not_null_col", { notNull: true });
+      expect(() => {
+        expect(myTable).not.toHaveColumn("not_null_col", { notNull: true });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: expected table "my_table" not to have column "not_null_col"]`,
+      );
+
+      expect(myTable).toHaveColumn("nullable_col", { notNull: false });
+      expect(() => {
+        expect(myTable).not.toHaveColumn("nullable_col", { notNull: false });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: expected table "my_table" not to have column "nullable_col"]`,
+      );
+    });
+  });
 });

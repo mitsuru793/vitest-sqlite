@@ -6,7 +6,10 @@ export function toHaveColumn(
   this: MatcherState,
   received: unknown,
   name: string,
-  opts: { type?: SqliteColumnType.Type } = {},
+  opts: {
+    type?: SqliteColumnType.Type;
+    notNull?: boolean;
+  } = {},
 ): MatcherResult {
   const tableRef = TableRef.parse(received);
 
@@ -14,8 +17,12 @@ export function toHaveColumn(
   let pass = targetColumn !== undefined;
 
   if (targetColumn) {
-    if (opts.type) {
+    if (opts.type !== undefined) {
       pass = targetColumn.type === opts.type;
+    }
+
+    if (opts.notNull !== undefined) {
+      pass = targetColumn.notNull === opts.notNull;
     }
   }
 

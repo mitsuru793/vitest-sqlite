@@ -12,7 +12,13 @@ export interface DbAdapterMatchers<R, T> {
 export interface TableRefMatchers<R, T> {
   /** expect(table(db, 'users')).toHaveColumn('name', { type: 'TEXT' }) */
   toHaveColumn: T extends TableRef.Type
-    ? (name: string, opts?: { type?: SqliteColumnType.Type }) => R
+    ? (
+        name: string,
+        opts?: {
+          type?: SqliteColumnType.Type;
+          notNull?: boolean;
+        },
+      ) => R
     : never;
 
   /** expect(table(db, 'users')).toHaveRow({ role: 'admin' }) or ({ sql: 'age > ?', params: [20] }) */
