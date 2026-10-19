@@ -16,6 +16,7 @@ export const schema = type({
     table: "string > 0",
     column: "string > 0",
   }).or("boolean"),
+  unique: "boolean",
 });
 
 export const parse = bindParse({ schema, name: "ColumnInfo" });

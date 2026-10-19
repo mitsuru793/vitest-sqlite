@@ -10,6 +10,7 @@ export function toHaveColumn(
     type?: SqliteColumnType.Type;
     notNull?: boolean;
     foreignKey?: boolean | { table: string; column: string };
+    unique?: boolean;
   } = {},
 ): MatcherResult {
   const tableRef = TableRef.parse(received);
@@ -35,6 +36,10 @@ export function toHaveColumn(
           targetColumn.foreignKey.table === opts.foreignKey.table &&
           targetColumn.foreignKey.column === opts.foreignKey.column;
       }
+    }
+
+    if (opts.unique !== undefined) {
+      pass = pass && targetColumn.unique === opts.unique;
     }
   }
 

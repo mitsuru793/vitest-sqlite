@@ -18,6 +18,7 @@ export interface TableRefMatchers<R, T> {
           type?: SqliteColumnType.Type;
           notNull?: boolean;
           foreignKey?: boolean | { table: string; column: string };
+          unique?: boolean;
         },
       ) => R
     : never;

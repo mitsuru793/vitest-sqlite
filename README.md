@@ -94,6 +94,9 @@ test("checks database tables and rows", () => {
 - `expect(db).toHaveTable(name)` checks whether a table exists.
 - `expect(tableRef).toHaveColumn(name, { type? })` checks for a column and,
   optionally, its SQLite type (`TEXT`, `INTEGER`, `REAL`, or `BLOB`).
+  The `unique` option checks for a single-column UNIQUE constraint or a
+  non-partial single-column unique index. Composite, partial, and expression
+  indexes do not make an individual column unique.
 - `expect(tableRef).toHaveRow(where)` checks whether at least one row matches.
 - `expect(tableRef).toHaveRowCount(count, where?)` checks the matching row
   count, or the total count if `where` is omitted.

@@ -14,19 +14,44 @@ export const bindGetColumns =
     }>;
     const fkInfoList = getTableForeignKey(db)(table);
 
-    return rows.map((r) => {
-      const foreignKey = fkInfoList.find((fk) => fk.from === r.name);
+    const uniqueInfoList = db
+      .prepare(`
+      SELECT
+        iList.name AS index_name,
+        iList.origin,
+        iList.partial,
+        iInfo.seqno,
+        iInfo.name AS column_name
+      FROM pragma_index_list(?) AS iList
+        JOIN pragma_index_info(iList.name) AS iInfo
+      WHERE iList."unique" = 1
+        AND iList.partial = 0
+      ORDER BY iList.name, iInfo.seqno;
+    `)
+      .bind(table)
+      .all() as Array<{
+      index_name: string;
+      origin: string;
+      partial: number;
+      seqno: number;
+      column_name: string;
+    }>;
+
+    return rows.map((row) => {
+      const foreignKey = fkInfoList.find((fk) => fk.from === row.name);
+      const unique = uniqueInfoList.some((info) => info.column_name === row.name);
       return {
-        name: r.name,
-        type: r.type,
-        notNull: r.notnull === 1,
-        primaryKey: r.pk > 0,
+        name: row.name,
+        type: row.type,
+        notNull: row.notnull === 1,
+        primaryKey: row.pk > 0,
         foreignKey: foreignKey
           ? {
               table: foreignKey.table,
               column: foreignKey.to,
             }
           : false,
+        unique,
       };
     });
   };

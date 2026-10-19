@@ -152,4 +152,50 @@ describe("toHaveColumn", () => {
       });
     });
   });
+
+  describe("with options.unique", () => {
+    dbTest.beforeEach(({ dbClient }) => {
+      dbClient.exec(`
+        DROP TABLE IF EXISTS my_table;
+        CREATE TABLE my_table (
+          id INTEGER PRIMARY KEY,
+          uniq_col TEXT NOT NULL UNIQUE,
+          not_uniq_col TEXT NOT NULL
+        );
+        `);
+    });
+
+    dbTest("when passed boolean", ({ db }) => {
+      expect(table(db, "my_table")).toHaveColumn("uniq_col", {
+        unique: true,
+      });
+      expect(() => {
+        expect(table(db, "my_table")).not.toHaveColumn("uniq_col", {
+          unique: true,
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: expected table "my_table" not to have column "uniq_col"]`,
+      );
+
+      expect(table(db, "my_table")).not.toHaveColumn("uniq_col", {
+        unique: false,
+      });
+      expect(() => {
+        expect(table(db, "my_table")).toHaveColumn("uniq_col", {
+          unique: false,
+        });
+      }).toThrowErrorMatchingInlineSnapshot(`[Error: expected column "my_table.uniq_col" to be undefined, but it is TEXT]`);
+
+      expect(table(db, "my_table")).toHaveColumn("not_uniq_col", {
+        unique: false,
+      });
+      expect(table(db, "my_table")).not.toHaveColumn("not_uniq_col", {
+        unique: true,
+      });
+
+      expect(table(db, "my_table")).not.toHaveColumn("missing", {
+        unique: false,
+      });
+    });
+  });
 });
