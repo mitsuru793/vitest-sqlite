@@ -31,6 +31,28 @@ describe("toHaveColumn", () => {
     expect(table(db, "posts")).toHaveColumn("title", { type: "TEXT" });
   });
 
+  dbTest("combines multiple options with AND semantics", ({ db, dbClient }) => {
+    dbClient.exec(`
+      DROP TABLE IF EXISTS my_table;
+      CREATE TABLE my_table (
+        col TEXT NOT NULL UNIQUE
+      );
+    `);
+
+    // matching type but mismatching notNull must still fail, and report the notNull mismatch
+    expect(() => {
+      expect(table(db, "my_table")).toHaveColumn("col", { type: "TEXT", notNull: false });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: expected column "my_table.col" to be nullable, but it is NOT NULL]`,
+    );
+
+    expect(table(db, "my_table")).toHaveColumn("col", {
+      type: "TEXT",
+      notNull: true,
+      unique: true,
+    });
+  });
+
   dbTest("fails when the table does not have the requested column", ({ db }) => {
     expect(table(db, "posts")).not.toHaveColumn("missing");
   });
@@ -101,6 +123,17 @@ describe("toHaveColumn", () => {
         `[Error: expected table "my_table" not to have column "nullable_col"]`,
       );
     });
+
+    dbTest(
+      "reports a notNull-specific message when the column is missing the expected nullability",
+      ({ db }) => {
+        expect(() => {
+          expect(table(db, "my_table")).toHaveColumn("nullable_col", { notNull: true });
+        }).toThrowErrorMatchingInlineSnapshot(
+          `[Error: expected column "my_table.nullable_col" to be NOT NULL, but it is nullable]`,
+        );
+      },
+    );
   });
 
   describe("with options.foreignKey", () => {
@@ -151,6 +184,27 @@ describe("toHaveColumn", () => {
         foreignKey: false,
       });
     });
+
+    dbTest(
+      "reports a foreignKey-specific message when the foreign key does not match",
+      ({ db }) => {
+        expect(() => {
+          expect(table(db, "posts")).toHaveColumn("author_id", {
+            foreignKey: { table: "categories", column: "id" },
+          });
+        }).toThrowErrorMatchingInlineSnapshot(
+          `[Error: expected column "posts.author_id" to have foreign key {"table":"categories","column":"id"}, but it has {"table":"users","column":"id"}]`,
+        );
+
+        expect(() => {
+          expect(table(db, "posts")).toHaveColumn("title", {
+            foreignKey: true,
+          });
+        }).toThrowErrorMatchingInlineSnapshot(
+          `[Error: expected column "posts.title" to have foreign key true, but it has false]`,
+        );
+      },
+    );
   });
 
   describe("with options.unique", () => {
@@ -184,7 +238,9 @@ describe("toHaveColumn", () => {
         expect(table(db, "my_table")).toHaveColumn("uniq_col", {
           unique: false,
         });
-      }).toThrowErrorMatchingInlineSnapshot(`[Error: expected column "my_table.uniq_col" to be undefined, but it is TEXT]`);
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: expected column "my_table.uniq_col" to be not unique, but it is unique]`,
+      );
 
       expect(table(db, "my_table")).toHaveColumn("not_uniq_col", {
         unique: false,
