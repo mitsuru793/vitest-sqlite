@@ -89,18 +89,37 @@ test("checks database tables and rows", () => {
 });
 ```
 
-### Available matchers
+## Matchers
 
-- `expect(db).toHaveTable(name)` checks whether a table exists.
-- `expect(tableRef).toHaveColumn(name, { type? })` checks for a column and,
-  optionally, its SQLite type (`TEXT`, `INTEGER`, `REAL`, or `BLOB`).
-  The `unique` option checks for a single-column UNIQUE constraint or a
-  non-partial single-column unique index. Composite, partial, and expression
-  indexes do not make an individual column unique.
-- `expect(tableRef).toHaveRow(where)` checks whether at least one row matches.
-- `expect(tableRef).toHaveRowCount(count, where?)` checks the matching row
-  count, or the total count if `where` is omitted.
-- `expect(tableRef).toBeEmptyTable()` checks that the table has no rows.
+The matcher types are receiver-specific: table matchers are available for
+`TableRef` values created by `table()`, while `toHaveTable` is available for
+`DbAdapter` values.
+
+### `expect(db).toHaveTable(name)`
+
+checks whether a table exists.
+
+### `expect(tableRef).toHaveColumn(name, { type? })`
+
+checks for a column and, optionally, its SQLite type (`TEXT`, `INTEGER`, `REAL`, or `BLOB`).
+
+The `unique` option checks for a single-column UNIQUE constraint or a
+non-partial single-column unique index. Composite, partial, and expression
+indexes do not make an individual column unique.
+
+### `expect(tableRef).toHaveRow(where)`
+
+checks whether at least one row matches.
+
+### `expect(tableRef).toHaveRowCount(count, where?)`
+
+checks the matching row count, or the total count if `where` is omitted.
+
+### `expect(tableRef).toBeEmptyTable()`
+
+checks that the table has no rows.
+
+## `where` Option
 
 `where` can be an object of column values or a SQL condition with parameters:
 
@@ -108,10 +127,6 @@ test("checks database tables and rows", () => {
 expect(users).toHaveRow({ role: "admin" });
 expect(users).toHaveRow({ sql: "name = ?", params: ["Ada"] });
 ```
-
-The matcher types are receiver-specific: table matchers are available for
-`TableRef` values created by `table()`, while `toHaveTable` is available for
-`DbAdapter` values.
 
 ## Development
 
